@@ -1,0 +1,20 @@
+[Unit]
+Description=Forma control service
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=forma
+Group=forma
+WorkingDirectory=/opt/forma
+EnvironmentFile=/etc/forma/control.env
+ExecStart=/opt/forma/.venv/bin/python /opt/forma/server.py
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/forma/.forma
+[Install]
+WantedBy=multi-user.target

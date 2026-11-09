@@ -1,0 +1,1 @@
+{"protocol":"forma-agent-v1","entrypoint":"main.py","name":"Text Utility Example","description":"A small local adapter example; it does not call AI or external services."}

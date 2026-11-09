@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Forma app logo">
+<rect width="1024" height="1024" fill="#ffffff"/>
+<rect x="137" y="153" width="750" height="750" rx="190" fill="#dce8df"/>
+<path d="M312 121H696Q871 121 871 296V696Q871 871 696 871H121V312Q121 121 312 121Z" fill="#214f3b"/>
+<path d="M389 302H687L666 401H488L467 501H625L604 598H446L415 743H295Z" fill="#ffffff"/>
+</svg>

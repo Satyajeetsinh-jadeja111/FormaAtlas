@@ -1,0 +1,10 @@
+# Add this location to your existing HTTPS virtual host after obtaining a certificate.
+# Do not enable an unencrypted public endpoint for the control service.
+location / {
+    proxy_pass http://127.0.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    client_max_body_size 13m;
+    proxy_read_timeout 90s;
+    proxy_buffering off;
+}

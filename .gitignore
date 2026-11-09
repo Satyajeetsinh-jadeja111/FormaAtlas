@@ -1,0 +1,7 @@
+*.sqlite3
+*.sqlite3-*
+.env*
+__pycache__/
+.forma/
+
+.venv-naukri/

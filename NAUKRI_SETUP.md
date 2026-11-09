@@ -1,0 +1,27 @@
+# Naukri local worker
+
+Open Forma → Agent library → Naukri Job Assistant. Upload a PDF and paste its text, then enter search keywords and required skills. Every listed skill must match a job page. This is keyword matching, not a guarantee of suitability. The resume is private per Forma account and stored in SQLite; protect the database and backups.
+
+Install optional free dependencies:
+
+```sh
+python3 -m venv --system-site-packages .venv-naukri
+.venv-naukri/bin/python -m pip install -r requirements-naukri.txt
+PLAYWRIGHT_BROWSERS_PATH=.forma/naukri-browsers .venv-naukri/bin/python -m playwright install chromium
+```
+
+Configure **Admin → Integrations → Gemini AI** with a Gemini API key and an available free-tier text model. Confirm that the project has no linked billing. The app cannot verify billing status from a key. In **Naukri**, enable Gemini and set the shared UTC daily request budget. There is no paid fallback or automatic retry. Each user must enable Gemini consent in their Naukri workspace. Contact/email/URL lines are filtered before sending; review resume text for other private information. Google may use free-tier inputs for product improvement. Saved exact-question answers take precedence; AI answers must be exact resume excerpts or the worker stops. Cache entries are scoped to user, question, model and filtered resume.
+
+Configure **Admin → Integrations → Email notifications** with the sender address, SMTP host, TLS port, username and provider-issued app password. For Gmail, use `smtp.gmail.com`, port `465`, implicit TLS and your full email as username; app-password availability depends on account settings. In **Naukri**, enable daily summaries. The recipient is each user's Forma account email, not the administrator notification destination. These summaries have a separate enable setting from LinkedIn notifications. Secrets are encrypted and never returned to the browser; blank fields keep stored credentials. Saving sends no messages or API requests.
+
+The admin application cap defaults to **50 attempts per rolling 24 hours**, adjustable from 1–50. This is a conservative configured ceiling, not a verified Naukri quota. The worker also stops when it sees Naukri's own limit message. Manual applications outside the worker cannot be counted. Every claimed application attempt consumes local allowance, including uncertain outcomes, to avoid over-applying. Confirmed applications alone appear in the success total.
+
+On reaching the local cap or a platform limit, exhausting search results, or stopping for review, the worker records a daily result and sends one summary to the user if enabled. The email reports the confirmed count and completion reason. A partial result is never described as goal achievement. One summary is claimed per user/local day; SMTP failures or crashes may leave failed/pending delivery and are not retried automatically. Once the day's summary is recorded, the worker skips further runs that local day. A process kill before summary creation cannot guarantee delivery. The host and worker must remain running.
+
+Use **Sign in / Create Forma account** inside the Naukri workspace, then click **Sign in to Naukri**. This opens a visible local browser and saves its session after Naukri redirects to the signed-in workspace. You can connect before uploading a resume. The page checks progress automatically and offers **Check connection**. A closed window, launch error or five-minute timeout is reported as needing attention. The session-saved status records a completed login, not a guarantee that the session remains valid. Stop an active worker before reconnecting. Use the advanced commands shown in the workspace to run the worker. Credentials are entered on Naukri, never in Forma. Browser cookies live in `.forma/naukri/<user>/browser`; treat this directory as a credential. Delete it to disconnect. Run one worker per user. Playwright prevents concurrent use of the same browser profile.
+
+The visible worker runs after the saved morning time in the selected timezone, refreshes once per local day and searches internal Naukri job listings. It follows Next links and deduplicates by canonical listing ID per user. External application buttons are skipped; off-domain navigations in application pages are blocked. Skill matching uses the visible job page, so review search quality before enabling automatic submission. Separate listing IDs may still represent the same vacancy.
+
+The worker never removes the old resume first. Upload/application attempts are claimed before writes. A timeout or crash can leave pending/needs_review; investigate on Naukri before clearing a record locally. No uncertain write is retried automatically. Disable scheduled work and restart the worker to pause; an in-flight action may complete. Saved settings are loaded at each run. Stop the process for an immediate pause before further actions.
+
+**Live verification required:** Naukri has no integration tested here. Selectors and confirmation messages are conservative and may need adjustment after inspecting the live UI. No account was connected, application submitted or resume uploaded during development. CAPTCHA/rate limits are never bypassed. Check Naukri's current terms before using browser automation: https://www.naukri.com/termsconditions . Resume re-uploading cannot guarantee ranking improvements. The laptop, browser and worker must remain available; no operating-system service is installed.

@@ -1,0 +1,21 @@
+[Unit]
+Description=Forma registered YouTube worker
+After=network-online.target forma.service
+Wants=network-online.target
+[Service]
+Type=simple
+User=forma
+Group=forma
+WorkingDirectory=/opt/forma
+ExecStart=/opt/forma/.venv/bin/python /opt/forma/youtube_worker.py --config /etc/forma/youtube-worker.json
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/forma/.forma
+MemoryMax=3G
+CPUQuota=150%
+[Install]
+WantedBy=multi-user.target
